@@ -11,9 +11,9 @@ static int on_recv(lua_State *L, char *buf, size_t len)
     lua_getglobal(L, "getRandomValue");
     lua_pushlstring(L, buf, len); /* Binary strings are okay */
     int ret = lua_pcall(L, 1, 1, 0); /* 1 argument, 1 result */
-    printf("ret: %d, buflen: %ld\n", ret, lua_tointeger(L, -1));
+	int value = lua_tointeger(L, -1);
     lua_pop(L, 1);
-    return ret;
+    return value;
 }
 
 int myfunc()
@@ -34,9 +34,12 @@ int myfunc()
     lua_getglobal(L, "address"); /* (2) */
     lua_getglobal(L, "port");
     printf("address: %s, port: %ld\n", /* (3) */
-        lua_tostring(L, -2), lua_tointeger(L, -1));
+    lua_tostring(L, -2), lua_tointeger(L, -1));
     lua_settop(L, 0); /* (4) */
 	char buf[512] = { 0x05, 'h', 'e', 'l', 'l', 'o' };
-    on_recv(L, buf, sizeof(buf));
-    return 1;
+    return on_recv(L, buf, sizeof(buf));
+}
+
+int main() {
+	printf("%d", myfunc());
 }
